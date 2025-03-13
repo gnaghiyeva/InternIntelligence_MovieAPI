@@ -2,16 +2,21 @@ package org.example.movieapi.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.movieapi.config.Mapper;
 import org.example.movieapi.config.MovieAPIClient;
+import org.example.movieapi.dtos.movie.MovieDto;
 import org.example.movieapi.model.Movie;
+import org.example.movieapi.payload.ApiResponse;
 import org.example.movieapi.repository.MovieRepository;
 import org.example.movieapi.service.MovieService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -20,6 +25,9 @@ public class MovieServiceImpl implements MovieService {
 
     @Autowired
     private MovieAPIClient movieAPIClient;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public void fetchAndSaveMoviesFromTMDB() {
@@ -36,6 +44,7 @@ public class MovieServiceImpl implements MovieService {
                 movie.setReleaseDate(LocalDate.parse(movieNode.get("release_date").asText()));
                 movie.setRating(movieNode.get("vote_average").asDouble());
                 movie.setPosterPath(movieNode.get("poster_path").asText());
+//                movie.setGenre(movieNode.get("genre").asText());
                 movieList.add(movie);
             }
             movieRepository.saveAll(movieList);
@@ -47,5 +56,16 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
+    }
+
+
+    @Override
+    public ApiResponse findMovieById(Long id) {
+        Optional<Movie> optionalMovie = movieRepository.findById(id);
+        if (optionalMovie.isEmpty()) {
+            return new ApiResponse(false, "Movie not found");
+        }
+        MovieDto movieDto = modelMapper.map(optionalMovie.get(), MovieDto.class);
+        return new ApiResponse(true,"Project found", movieDto);
     }
 }
