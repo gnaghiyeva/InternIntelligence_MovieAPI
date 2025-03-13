@@ -4,6 +4,7 @@ import org.example.movieapi.dtos.movie.MovieCreateDto;
 import org.example.movieapi.dtos.movie.MovieUpdateDto;
 import org.example.movieapi.model.Movie;
 import org.example.movieapi.payload.ApiResponse;
+import org.example.movieapi.repository.MovieRepository;
 import org.example.movieapi.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import java.util.List;
 public class MovieController {
     @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private MovieRepository movieRepository;
 
     @PostMapping("/fetch-from-tmdb")
     public ResponseEntity<String> fetchMoviesFromTMDB() {
@@ -51,5 +55,15 @@ public class MovieController {
     public ResponseEntity<ApiResponse> deleteMovie(@RequestParam Long id) {
         ApiResponse response = movieService.deleteMovie(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public List<Movie> searchMovies(@RequestParam String title) {
+        return movieRepository.findByTitle(title);
+    }
+
+    @GetMapping("/filter")
+    public List<Movie> filterMovies(@RequestParam String releaseDate) {
+        return movieRepository.findByReleaseDate(releaseDate);
     }
 }
