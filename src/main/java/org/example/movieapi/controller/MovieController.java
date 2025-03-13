@@ -1,6 +1,7 @@
 package org.example.movieapi.controller;
 
 import org.example.movieapi.dtos.movie.MovieCreateDto;
+import org.example.movieapi.dtos.movie.MovieUpdateDto;
 import org.example.movieapi.model.Movie;
 import org.example.movieapi.payload.ApiResponse;
 import org.example.movieapi.service.MovieService;
@@ -38,5 +39,17 @@ public class MovieController {
     public ResponseEntity<ApiResponse> createMovie(@ModelAttribute MovieCreateDto movieCreateDto) {
         ApiResponse movies = movieService.createMovie(movieCreateDto);
         return new ResponseEntity<>(movies, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/id", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> updateMovie(@RequestParam Long id, @ModelAttribute MovieUpdateDto movieUpdateDto){
+        ApiResponse response = movieService.updateMovie(id, movieUpdateDto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/id")
+    public ResponseEntity<ApiResponse> deleteMovie(@RequestParam Long id) {
+        ApiResponse response = movieService.deleteMovie(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

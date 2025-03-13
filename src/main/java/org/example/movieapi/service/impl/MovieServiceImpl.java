@@ -6,6 +6,7 @@ import org.example.movieapi.config.Mapper;
 import org.example.movieapi.config.MovieAPIClient;
 import org.example.movieapi.dtos.movie.MovieCreateDto;
 import org.example.movieapi.dtos.movie.MovieDto;
+import org.example.movieapi.dtos.movie.MovieUpdateDto;
 import org.example.movieapi.model.Movie;
 import org.example.movieapi.payload.ApiResponse;
 import org.example.movieapi.repository.MovieRepository;
@@ -75,5 +76,41 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = modelMapper.map(movieCreateDto, Movie.class);
         movieRepository.save(movie);
         return new ApiResponse(true,"Movie created", movie);
+    }
+
+    @Override
+    public ApiResponse updateMovie(Long id, MovieUpdateDto movieUpdateDto) {
+        Optional<Movie> optionalMovie = movieRepository.findById(id);
+        if (optionalMovie.isEmpty()) {
+            return new ApiResponse(false, "Movie not found");
+        }
+        Movie movie = optionalMovie.get();
+        if(movieUpdateDto.getTitle()!=null && !movieUpdateDto.getTitle().isEmpty() && !movieUpdateDto.getTitle().isBlank()){
+            movie.setTitle(movieUpdateDto.getTitle());
+        }
+        if(movieUpdateDto.getDescription()!=null && !movieUpdateDto.getDescription().isEmpty() && !movieUpdateDto.getDescription().isBlank()){
+            movie.setDescription(movieUpdateDto.getDescription());
+        }
+        if(movieUpdateDto.getPosterPath()!=null && !movieUpdateDto.getPosterPath().isEmpty() && !movieUpdateDto.getPosterPath().isBlank()){
+            movie.setPosterPath(movieUpdateDto.getPosterPath());
+        }
+        if(movieUpdateDto.getReleaseDate()!=null && !movieUpdateDto.getReleaseDate().isEmpty() && !movieUpdateDto.getReleaseDate().isBlank()){
+            movie.setReleaseDate(movieUpdateDto.getReleaseDate());
+        }
+        if(movieUpdateDto.getRating()!=null && !movieUpdateDto.getRating().isNaN()){
+            movie.setRating(movieUpdateDto.getRating());
+        }
+        movieRepository.save(movie);
+        return new ApiResponse(true,"Movie updated", movie);
+    }
+
+    @Override
+    public ApiResponse deleteMovie(Long id) {
+        Optional<Movie> optionalMovie = movieRepository.findById(id);
+        if(optionalMovie.isEmpty()){
+            return new ApiResponse(false, "Movie not found");
+        }
+        movieRepository.delete(optionalMovie.get());
+        return new ApiResponse(true,"Movie deleted", optionalMovie.get());
     }
 }
