@@ -1,9 +1,12 @@
 package org.example.movieapi.controller;
 
+import org.example.movieapi.dtos.movie.MovieCreateDto;
 import org.example.movieapi.model.Movie;
 import org.example.movieapi.payload.ApiResponse;
 import org.example.movieapi.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +32,11 @@ public class MovieController {
     public ResponseEntity<ApiResponse> getMovieById(@RequestParam Long id) {
         ApiResponse movieDetail = movieService.findMovieById(id);
         return ResponseEntity.ok(movieDetail);
+    }
+
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> createMovie(@ModelAttribute MovieCreateDto movieCreateDto) {
+        ApiResponse movies = movieService.createMovie(movieCreateDto);
+        return new ResponseEntity<>(movies, HttpStatus.CREATED);
     }
 }

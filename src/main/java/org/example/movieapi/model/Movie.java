@@ -19,10 +19,7 @@ public class Movie {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 500)
-    private String genre;
-
-    private LocalDate releaseDate;
+    private String releaseDate;
     private double rating;
     private String posterPath;
 

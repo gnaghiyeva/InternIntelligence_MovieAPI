@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.movieapi.config.Mapper;
 import org.example.movieapi.config.MovieAPIClient;
+import org.example.movieapi.dtos.movie.MovieCreateDto;
 import org.example.movieapi.dtos.movie.MovieDto;
 import org.example.movieapi.model.Movie;
 import org.example.movieapi.payload.ApiResponse;
@@ -41,7 +42,7 @@ public class MovieServiceImpl implements MovieService {
                 Movie movie = new Movie();
                 movie.setTitle(movieNode.get("title").asText());
                 movie.setDescription(movieNode.get("overview").asText());
-                movie.setReleaseDate(LocalDate.parse(movieNode.get("release_date").asText()));
+                movie.setReleaseDate(movieNode.get("release_date").asText());
                 movie.setRating(movieNode.get("vote_average").asDouble());
                 movie.setPosterPath(movieNode.get("poster_path").asText());
 //                movie.setGenre(movieNode.get("genre").asText());
@@ -67,5 +68,12 @@ public class MovieServiceImpl implements MovieService {
         }
         MovieDto movieDto = modelMapper.map(optionalMovie.get(), MovieDto.class);
         return new ApiResponse(true,"Project found", movieDto);
+    }
+
+    @Override
+    public ApiResponse createMovie(MovieCreateDto movieCreateDto) {
+        Movie movie = modelMapper.map(movieCreateDto, Movie.class);
+        movieRepository.save(movie);
+        return new ApiResponse(true,"Movie created", movie);
     }
 }
