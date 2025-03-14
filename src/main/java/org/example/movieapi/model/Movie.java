@@ -22,5 +22,7 @@ public class Movie {
     private String releaseDate;
     private double rating;
     private String posterPath;
+    private String originalLanguage;
+    private double popularity;
 
 }

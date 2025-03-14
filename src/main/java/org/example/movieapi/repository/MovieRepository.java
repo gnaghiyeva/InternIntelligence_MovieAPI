@@ -8,8 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    List<Movie> findByTitle(String title);
+    @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    List<Movie> findByTitle(@Param("title") String title);
 
-    @Query("SELECT m FROM Movie m WHERE m.releaseDate = :releaseDate")
-    List<Movie> findByReleaseDate(@Param("releaseDate") String releaseDate);
+    @Query("SELECT m FROM Movie m WHERE " +
+            "FUNCTION('YEAR', m.releaseDate) = :year " +
+            "AND m.popularity >= :minPopularity " +
+            "AND m.rating >= :minVote")
+    List<Movie> filterMovies(@Param("year") int year,
+                             @Param("minPopularity") double minPopularity,
+                             @Param("minVoteAverage") double minVoteAverage);
 }

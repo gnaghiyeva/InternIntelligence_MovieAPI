@@ -9,4 +9,6 @@ public class MovieUpdateDto {
     private String releaseDate;
     private Double rating;
     private String posterPath;
+    private String originalLanguage;
+    private double popularity;
 }

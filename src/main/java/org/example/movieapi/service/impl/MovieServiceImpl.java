@@ -15,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +45,8 @@ public class MovieServiceImpl implements MovieService {
                 movie.setReleaseDate(movieNode.get("release_date").asText());
                 movie.setRating(movieNode.get("vote_average").asDouble());
                 movie.setPosterPath(movieNode.get("poster_path").asText());
+                movie.setOriginalLanguage(movieNode.get("original_language").asText());
+                movie.setPopularity(movieNode.get("popularity").asDouble());
 //                movie.setGenre(movieNode.get("genre").asText());
                 movieList.add(movie);
             }
@@ -100,6 +101,13 @@ public class MovieServiceImpl implements MovieService {
         if(movieUpdateDto.getRating()!=null && !movieUpdateDto.getRating().isNaN()){
             movie.setRating(movieUpdateDto.getRating());
         }
+        if(movieUpdateDto.getOriginalLanguage()!=null &&!movieUpdateDto.getOriginalLanguage().isEmpty() && !movieUpdateDto.getOriginalLanguage().isBlank()){
+            movie.setOriginalLanguage(movieUpdateDto.getOriginalLanguage());
+        }
+        if (movieUpdateDto.getPopularity() != 0.0) {
+            movie.setPopularity(movieUpdateDto.getPopularity());
+        }
+
         movieRepository.save(movie);
         return new ApiResponse(true,"Movie updated", movie);
     }

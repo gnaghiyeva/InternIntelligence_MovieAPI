@@ -12,7 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
@@ -63,7 +66,20 @@ public class MovieController {
     }
 
     @GetMapping("/filter")
-    public List<Movie> filterMovies(@RequestParam String releaseDate) {
-        return movieRepository.findByReleaseDate(releaseDate);
+    public List<Movie> filterByYearPopularityVote(@RequestParam int year, @RequestParam(required = false) Double minPopularity, @RequestParam(required = false) Double minVoteAverage) {
+        List<Movie> allMovies = movieRepository.findAll();
+
+        return allMovies.stream()
+                .filter(movie -> {
+                    try {
+                        LocalDate releaseDate = LocalDate.parse(movie.getReleaseDate(), DateTimeFormatter.ISO_DATE);
+                        return releaseDate.getYear() == year;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .filter(movie -> minPopularity == null || movie.getPopularity() >= minPopularity)
+                .filter(movie -> minVoteAverage == null || movie.getRating() >= minVoteAverage)
+                .collect(Collectors.toList());
     }
 }
